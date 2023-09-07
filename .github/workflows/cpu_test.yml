@@ -31,5 +31,5 @@ jobs:
         context: .
         platforms: linux/amd64
         push: true
-        tags: cfd-go/tclb:ubuntu-22.04-cuda-11.7
+        tags: ghcr.io/cfd-go/tclb:ubuntu-22.04-cuda-11.7
         file: gen/Dockerfile.ubuntu-22.04-cuda-11.7 
