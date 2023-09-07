@@ -101,7 +101,7 @@ jobs:
         context: .
         platforms: linux/amd64
         push: true
-        tags: <?%s paste(reg_repo,d$tag,sep=":",collapse=" ") ?>
+        tags: <?%s paste(reg_repo,d$tag,sep=":",collapse=",") ?>
         file: <?%s d$dockerfile ?> <?R
   } ?>
 <?R
