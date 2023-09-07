@@ -47,7 +47,7 @@ WORKDIR /home/vscode
 <?R
         install_apt(c("openssh-server","python3-pip"))
         install_sh("r", sudo=TRUE)
-        install_sh("openmp", sudo=TRUE)
+        install_sh("openmpi", sudo=TRUE)
         install_sh("rdep")
         if (d$arch == "cuda") install_sh(c("cuda",d$version))
         if (d$arch == "hip") install_sh(c("hip",d$version))
