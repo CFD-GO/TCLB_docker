@@ -1,7 +1,7 @@
 <?R
     rows = function(x) lapply(seq_len(nrow(x)),function(i) lapply(x,"[[",i))
 
-    reg_repo = c("cfd-go/tclb", "ghcr.io/cfd-go/tclb")
+    reg_repo = c("cfdgo/tclb", "ghcr.io/cfd-go/tclb")
 
     tab = rbind(
         expand.grid(arch=c("cuda"), version=c("11.7","12.0")),

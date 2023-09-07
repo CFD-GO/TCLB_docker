@@ -36,7 +36,7 @@ jobs:
         context: .
         platforms: linux/amd64
         push: true
-        tags: cfd-go/tclb:ubuntu-22.04-cuda-11.7,ghcr.io/cfd-go/tclb:ubuntu-22.04-cuda-11.7
+        tags: cfdgo/tclb:ubuntu-22.04-cuda-11.7,ghcr.io/cfd-go/tclb:ubuntu-22.04-cuda-11.7
         file: gen/Dockerfile.ubuntu-22.04-cuda-11.7 
     - name: Build ubuntu-22.04 big cpu 
       uses: docker/build-push-action@v2
@@ -44,5 +44,5 @@ jobs:
         context: .
         platforms: linux/amd64
         push: true
-        tags: cfd-go/tclb:ubuntu-22.04-big,ghcr.io/cfd-go/tclb:ubuntu-22.04-big
+        tags: cfdgo/tclb:ubuntu-22.04-big,ghcr.io/cfd-go/tclb:ubuntu-22.04-big
         file: gen/Dockerfile.ubuntu-22.04-big 
