@@ -94,7 +94,7 @@ jobs:
         context: .
         platforms: linux/amd64
         push: true
-        tags: <?%s d$tag ?>
+        tags: CFD-GO/TCLB:<?%s d$tag ?>
         file: <?%s d$dockerfile ?> <?R
   } ?>
 <?R
