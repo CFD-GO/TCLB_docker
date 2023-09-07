@@ -1,6 +1,8 @@
 <?R
     rows = function(x) lapply(seq_len(nrow(x)),function(i) lapply(x,"[[",i))
 
+    reg_repo = "CFD-GO/TCLB"
+
     tab = rbind(
         expand.grid(arch=c("cuda"), version=c("11.7","12.0")),
         expand.grid(arch=c("hip"),  version=c("5.4.1","5.6.0")),
@@ -94,7 +96,7 @@ jobs:
         context: .
         platforms: linux/amd64
         push: true
-        tags: CFD-GO/TCLB:<?%s d$tag ?>
+        tags: <?%s tolower(reg_repo) ?>:<?%s d$tag ?>
         file: <?%s d$dockerfile ?> <?R
   } ?>
 <?R
