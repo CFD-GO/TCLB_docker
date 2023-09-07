@@ -1,0 +1,82 @@
+<?R
+    rows = function(x) lapply(seq_len(nrow(x)),function(i) lapply(x,"[[",i))
+
+    tab = rbind(
+        expand.grid(arch=c("cuda"), version=c("11.7","12.0")),
+        expand.grid(arch=c("hip"),  version=c("5.4.1","5.6.0")),
+        expand.grid(arch=c("cpu"),  version=c(""))
+    )
+    tmp = expand.grid(i=seq_len(nrow(tab)), type=c("small","big"), base="ubuntu-22.04")
+    tab = cbind(tab[tmp[,1], ], tmp[,-1,drop=FALSE])
+    tab[] = lapply(tab, as.character)
+    
+    exc = function(x,y) { ifelse(x==y, "", x) }
+    tab$tag = gsub("--*(-|$)","\\1", paste(tab$base, exc(tab$type,"small"), exc(tab$arch,"cpu"), tab$version, sep="-"))
+    tab$cpp_devcon_tag = paste0("dev-",tab$base)
+    tab$dockerfile = paste("gen/Dockerfile", tab$tag, sep=".")
+
+    writeLines(tab$tag)
+    
+    install_apt = function(packs) {
+        packs = paste(packs, collapse=" "); ?>
+RUN export DEBIAN_FRONTEND=noninteractive && sudo apt-get update && \
+    && sudo apt-get -y install --no-install-recommends \
+    <?%s packs ?> <?R
+    }
+
+    install_sh_opt = "--group --retry 3 --retry-delay 5"
+    install_sh = function(packs,sudo=FALSE) {
+        packs = paste(packs, collapse=" ");
+        if (sudo) { ?>
+RUN /tmp/install.sh <?%s install_sh_opt ?> <?%s packs ?> <?R
+        } else { ?>
+RUN sudo /tmp/install.sh <?%s install_sh_opt ?> --sudo <?%s packs ?> <?R
+        }
+    }
+
+    for (d in rows(tab)) {
+        sink(d$dockerfile) ?>
+FROM mcr.microsoft.com/devcontainers/cpp:<?%s d$cpp_devcon_tag ?>
+
+COPY tools/install.sh /tmp/
+RUN chmod +x /tmp/install.sh
+
+USER vscode
+WORKDIR /home/vscode
+<?R
+        install_apt(c("openssh-server","python3-pip"))
+        install_sh("r", sudo=TRUE)
+        install_sh("openmp", sudo=TRUE)
+        install_sh("rdep")
+        if (d$arch == "cuda") install_sh(c("cuda",d$version))
+        if (d$arch == "hip") install_sh(c("hip",d$version))
+        if (d$type == "big") {
+            install_apt(c("libxml2","libxml2-dev","libgl1-mesa-glx"))
+            install_sh(c("rinside","reticulate","--rpackage languageserver", "--rpackage png")) ?>
+RUN pip3 install vtk
+ENV RETICULATE_PYTHON=/usr/bin/python3 <?R
+        }
+        sink()
+    }
+    sink(".github/workflows/cpu_test.yml")
+?>
+name: Docker Build
+
+on: [ push, pull_request ]
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+    steps:
+    - name: Git checkout
+      uses: actions/checkout@v3 <?R
+  for (d in rows(tab)) { ?>
+    - name: Download install script
+      shell: bash
+      run: "" <?R
+  } ?>
+<?R
+    sink();
+?>
