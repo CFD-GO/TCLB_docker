@@ -49,8 +49,8 @@ WORKDIR /home/vscode
         install_sh("r", sudo=TRUE)
         install_sh("openmpi", sudo=TRUE)
         install_sh("rdep")
-        if (d$arch == "cuda") install_sh(c("cuda",d$version))
-        if (d$arch == "hip") install_sh(c("hip",d$version))
+        if (d$arch == "cuda") install_sh(c("cuda",d$version, sudo=TRUE))
+        if (d$arch == "hip") install_sh(c("hip",d$version, sudo=TRUE))
         if (d$type == "big") {
             install_apt(c("libxml2","libxml2-dev","libgl1-mesa-glx"))
             install_sh(c("rinside","reticulate","--rpackage languageserver", "--rpackage png")) ?>
