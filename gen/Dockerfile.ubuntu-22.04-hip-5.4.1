@@ -13,4 +13,4 @@ RUN export DEBIAN_FRONTEND=noninteractive && sudo apt-get update && \
 RUN sudo /tmp/install.sh --group --retry 3 --retry-delay 5 --sudo r 
 RUN sudo /tmp/install.sh --group --retry 3 --retry-delay 5 --sudo openmpi 
 RUN /tmp/install.sh --group --retry 3 --retry-delay 5 rdep 
-RUN /tmp/install.sh --group --retry 3 --retry-delay 5 hip 5.4.1 TRUE 
+RUN sudo /tmp/install.sh --group --retry 3 --retry-delay 5 --sudo hip 5.4.1 
