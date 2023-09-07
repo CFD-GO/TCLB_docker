@@ -75,7 +75,7 @@ jobs:
   for (d in rows(tab)) { ?>
     - name: Download install script
       shell: bash
-      run: "docker build <?%s d$dockerfile ?>" <?R
+      run: "docker build -f <?%s d$dockerfile ?>" <?R
   } ?>
 <?R
     sink();
