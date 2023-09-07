@@ -50,14 +50,14 @@ jobs:
         push: true
         tags: cfdgo/tclb:ubuntu-22.04-hip-5.4.1,ghcr.io/cfd-go/tclb:ubuntu-22.04-hip-5.4.1
         file: gen/Dockerfile.ubuntu-22.04-hip-5.4.1 
-    - name: Build ubuntu-22.04 small hip 5.6.0
+    - name: Build ubuntu-22.04 small hip 5.6.1
       uses: docker/build-push-action@v4.1.1
       with:
         context: .
         platforms: linux/amd64
         push: true
-        tags: cfdgo/tclb:ubuntu-22.04-hip-5.6.0,ghcr.io/cfd-go/tclb:ubuntu-22.04-hip-5.6.0
-        file: gen/Dockerfile.ubuntu-22.04-hip-5.6.0 
+        tags: cfdgo/tclb:ubuntu-22.04-hip-5.6.1,ghcr.io/cfd-go/tclb:ubuntu-22.04-hip-5.6.1
+        file: gen/Dockerfile.ubuntu-22.04-hip-5.6.1 
     - name: Build ubuntu-22.04 small cpu 
       uses: docker/build-push-action@v4.1.1
       with:
@@ -90,14 +90,14 @@ jobs:
         push: true
         tags: cfdgo/tclb:ubuntu-22.04-big-hip-5.4.1,ghcr.io/cfd-go/tclb:ubuntu-22.04-big-hip-5.4.1
         file: gen/Dockerfile.ubuntu-22.04-big-hip-5.4.1 
-    - name: Build ubuntu-22.04 big hip 5.6.0
+    - name: Build ubuntu-22.04 big hip 5.6.1
       uses: docker/build-push-action@v4.1.1
       with:
         context: .
         platforms: linux/amd64
         push: true
-        tags: cfdgo/tclb:ubuntu-22.04-big-hip-5.6.0,ghcr.io/cfd-go/tclb:ubuntu-22.04-big-hip-5.6.0
-        file: gen/Dockerfile.ubuntu-22.04-big-hip-5.6.0 
+        tags: cfdgo/tclb:ubuntu-22.04-big-hip-5.6.1,ghcr.io/cfd-go/tclb:ubuntu-22.04-big-hip-5.6.1
+        file: gen/Dockerfile.ubuntu-22.04-big-hip-5.6.1 
     - name: Build ubuntu-22.04 big cpu 
       uses: docker/build-push-action@v4.1.1
       with:
