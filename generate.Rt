@@ -29,9 +29,9 @@ RUN export DEBIAN_FRONTEND=noninteractive && sudo apt-get update && \
     install_sh = function(packs,sudo=FALSE) {
         packs = paste(packs, collapse=" ");
         if (sudo) { ?>
-RUN /tmp/install.sh <?%s install_sh_opt ?> <?%s packs ?> <?R
-        } else { ?>
 RUN sudo /tmp/install.sh <?%s install_sh_opt ?> --sudo <?%s packs ?> <?R
+        } else { ?>
+RUN /tmp/install.sh <?%s install_sh_opt ?> <?%s packs ?> <?R
         }
     }
 
