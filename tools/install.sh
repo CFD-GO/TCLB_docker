@@ -178,6 +178,7 @@ GITHUB=false
 RSTUDIO_REPO=false
 SUDO=""
 VERB=false
+SMALL=false
 
 case "$1" in
 -v|--verbose) VERB=true; shift ;;
@@ -237,6 +238,7 @@ do
 		echo "    --retry N       : retry failed steps N times"
 		echo "    --retry-delay M : delay M seconds between retries"
 		echo "    --group         : Use github actions workflow annotation for output"
+		echo "    --small         : Installing the minimal for compilation"
 		echo "    --help          : display this help message"
 		echo ""
 		echo "  *) needs sudo"
@@ -244,6 +246,7 @@ do
 		exit 0;
 		;;
 	--dry) DRY=true ;;
+	--small) SMALL=true ;;
 	--group) GRPOUTPUT=true ;;
 	--retry) shift; TRYCOUNT="$1" ;;
 	--retry-delay) shift; TRYDELAY="$1" ;;
@@ -379,7 +382,12 @@ do
 			try "Updating APT" $SUDO apt-get update -qq
 			CUDA_APT=${CUDA%-*}
 			CUDA_APT=${CUDA_APT/./-}
-			try "Installing CUDA form APT" $SUDO apt-get install -y cuda-compiler-${CUDA_APT} cuda-libraries-${CUDA_APT} cuda-libraries-dev-${CUDA_APT}
+			if $SMALL
+			then
+				try "Installing CUDA form APT" $SUDO apt-get install -y cuda-nvcc-${CUDA_APT}
+			else
+				try "Installing CUDA form APT" $SUDO apt-get install -y cuda-compiler-${CUDA_APT} cuda-libraries-${CUDA_APT} cuda-libraries-dev-${CUDA_APT}
+			fi
 #			try "Clean APT" $SUDO apt-get clean
 			;;
 		*)
@@ -406,7 +414,12 @@ do
 			try "Updating APT" $SUDO apt-get update
 			try "Download AMDGPU install deb" wget https://repo.radeon.com/amdgpu-install/$AMDGPU_VER/ubuntu/$OS/$AMDGPU_DEB
 			try "Installing deb" $SUDO apt-get install ./$AMDGPU_DEB
-			try "Installing ROCm (amdgpu-install)" $SUDO amdgpu-install -y --usecase=rocm
+			if $SMALL
+			then
+				try "Installing ROCm (amdgpu-install)" $SUDO amdgpu-install -y --usecase=hip
+			else
+				try "Installing ROCm (amdgpu-install)" $SUDO amdgpu-install -y --usecase=rocm
+			fi
 			;;
 		*)
 			pms_error HIP ;;
