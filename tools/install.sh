@@ -412,11 +412,12 @@ do
 			AMDGPU_DEB="$(printf amdgpu-install_%d.%d.%d%02d%02d-1_all.deb "$V1" "$V2" "$V1" "$V2" "$V3")"
 			AMDGPU_VER="$HIP"
 			try "Updating APT" $SUDO apt-get update
+			try "Install missing package for HIP" $SUDO apt-get install libstdc++-12-dev
 			try "Download AMDGPU install deb" wget https://repo.radeon.com/amdgpu-install/$AMDGPU_VER/ubuntu/$OS/$AMDGPU_DEB
 			try "Installing deb" $SUDO apt-get install ./$AMDGPU_DEB
 			if $SMALL
 			then
-				try "Installing ROCm (amdgpu-install)" $SUDO amdgpu-install -y --usecase=hip
+				try "Installing ROCm (amdgpu-install)" $SUDO amdgpu-install -y --usecase=rocm
 			else
 				try "Installing ROCm (amdgpu-install)" $SUDO amdgpu-install -y --usecase=rocm
 			fi
