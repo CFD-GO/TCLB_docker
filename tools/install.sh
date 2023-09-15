@@ -121,7 +121,7 @@ EOF
 function install_apt {
 	comment="$1"
 	shift
-	try "$comment" $SUDO apt-get install -y --allow-unauthenticated --no-install-recommends "$@"
+	try "$comment" $SUDO apt-get install -y --allow-unauthenticated "$@"
 }
 
 function update_apt {
