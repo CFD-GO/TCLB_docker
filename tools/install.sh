@@ -118,6 +118,18 @@ function install_rpackage {
 EOF
 }
 
+function install_apt {
+	comment="$1"
+	shift
+	try "$comment" $SUDO apt-get install -y --allow-unauthenticated --no-install-recommends "$@"
+}
+
+function update_apt {
+	CLEAN_APT=true
+	try "Updating APT" $SUDO apt-get update -qq
+}
+
+
 function gitdep.cp {
 	echo -n "Copy $1... "
 	if ! test -f "gitdep_repo/$1"
@@ -179,6 +191,8 @@ RSTUDIO_REPO=false
 SUDO=""
 VERB=false
 SMALL=false
+CLEAN=false
+CLEAN_APT=false
 
 case "$1" in
 -v|--verbose) VERB=true; shift ;;
@@ -254,7 +268,8 @@ do
 	--pms) shift; PMS="$1" ;;
 	--github) GITHUB=true ;;
 	--rstudio-repo) RSTUDIO_REPO=true ;;
-        -v|--verbose) error "-v/--verbose should be the first argument" ;;
+	--clean) CLEAN=true ;;
+    -v|--verbose) error "-v/--verbose should be the first argument" ;;
 	--sudo)
 		if test "$UID" == "0"
 		then
@@ -301,8 +316,8 @@ do
 				try "Adding repository" add-apt-repository "deb ${CRAN}/bin/linux/ubuntu $DIST/"
 				try "Adding repository key" apt-key adv --keyserver hkp://keyserver.ubuntu.com:80/ --recv-keys E084DAB9
 			fi
-			try "Updating APT" $SUDO apt-get update -qq
-			try "Installing R base" $SUDO apt-get install -y --allow-unauthenticated --no-install-recommends r-base-dev r-recommended qpdf
+			update_apt
+			install_apt "Installing R base" r-base-dev r-recommended qpdf
 			;;
 		brew)
 			try "Installing R from brew" brew install r
@@ -379,14 +394,14 @@ do
 			try "Downloading CUDA keyring file" wget $WGETOPT http://developer.download.nvidia.com/compute/cuda/repos/${OS}/x86_64/cuda-keyring_${KEYRINGVER}_all.deb -O tmp.keyring.deb
 			try "Installing CUDA dist" $SUDO dpkg -i tmp.keyring.deb
 			try "Planting pin file" $SUDO mv tmp.pinfile /etc/apt/preferences.d/cuda-repository-pin-600
-			try "Updating APT" $SUDO apt-get update -qq
+			update_apt
 			CUDA_APT=${CUDA%-*}
 			CUDA_APT=${CUDA_APT/./-}
 			if $SMALL
 			then
-				try "Installing CUDA form APT" $SUDO apt-get install -y cuda-nvcc-${CUDA_APT}
+				install_apt "Installing CUDA form APT" cuda-nvcc-${CUDA_APT}
 			else
-				try "Installing CUDA form APT" $SUDO apt-get install -y cuda-compiler-${CUDA_APT} cuda-libraries-${CUDA_APT} cuda-libraries-dev-${CUDA_APT}
+				install_apt "Installing CUDA form APT" cuda-compiler-${CUDA_APT} cuda-libraries-${CUDA_APT} cuda-libraries-dev-${CUDA_APT}
 			fi
 #			try "Clean APT" $SUDO apt-get clean
 			;;
@@ -411,10 +426,10 @@ do
 			fi			
 			AMDGPU_DEB="$(printf amdgpu-install_%d.%d.%d%02d%02d-1_all.deb "$V1" "$V2" "$V1" "$V2" "$V3")"
 			AMDGPU_VER="$HIP"
-			try "Updating APT" $SUDO apt-get update
-			try "Install missing package for HIP" $SUDO apt-get install libstdc++-12-dev
+			update_apt
+			install_apt "Install missing package for HIP" libstdc++-12-dev
 			try "Download AMDGPU install deb" wget https://repo.radeon.com/amdgpu-install/$AMDGPU_VER/ubuntu/$OS/$AMDGPU_DEB
-			try "Installing deb" $SUDO apt-get install ./$AMDGPU_DEB
+			install_apt "Installing deb" ./$AMDGPU_DEB
 			if $SMALL
 			then
 				try "Installing ROCm (amdgpu-install)" $SUDO amdgpu-install -y --usecase=rocm
@@ -435,8 +450,8 @@ do
 			echo "Don't forget to load mpi module before compilation."
 			;;
 		apt-get)
-			try "Updating APT" $SUDO apt-get update -qq
-			try "Installing OpenMPI from APT" $SUDO apt-get install -y openmpi-bin libopenmpi-dev
+			update_apt
+			install_apt "Installing OpenMPI from APT" openmpi-bin libopenmpi-dev
 #			try "Clean APT" $SUDO apt-get clean
 			;;
 		brew)
@@ -449,7 +464,8 @@ do
 	lcov)
 		case "$PMS" in
 		apt-get)
-			try "Installing lcov and time" $SUDO apt-get install -y time lcov
+			update_apt
+			install_apt "Installing lcov and time" time lcov
 			;;
 		*)
 			pms_error lcov ;;
@@ -485,7 +501,8 @@ do
 			try "Installing sympy from yum" $SUDO yum install -y sympy
 			;;
 		apt-get)
-			try "Installing python-dev from APT" $SUDO apt-get install -qq python3-dev python3-numpy python3-sympy
+			update_apt
+			install_apt "Installing python-dev from APT" python3-dev python3-numpy python3-sympy
 			;;
 		brew)
 			try "Installing Python from brew (this should install headers as well)" brew install python
@@ -542,5 +559,13 @@ do
 	esac
 	shift
 done
+
+if $CLEAN
+then
+	if $CLEAN_APT
+	then
+		try "Cleaning apt" $SUDO apt-get -y clean
+	fi
+fi
 
 exit 0;
