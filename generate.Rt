@@ -24,10 +24,10 @@
         packs = paste(packs, collapse=" "); ?>
 RUN export DEBIAN_FRONTEND=noninteractive && sudo apt-get update && \
       sudo apt-get -y install --no-install-recommends \
-        <?%s packs ?> <?R
+        <?%s packs ?> && sudo apt-get -y clean <?R
     }
 
-    install_sh_opt = "--group --retry 3 --retry-delay 5 --small"
+    install_sh_opt = "--group --retry 3 --retry-delay 5 --small --clean"
     install_sh = function(packs,sudo=FALSE) {
         packs = paste(packs, collapse=" ");
         if (sudo) { ?>

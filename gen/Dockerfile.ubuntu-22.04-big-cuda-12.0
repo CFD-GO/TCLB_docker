@@ -9,17 +9,17 @@ WORKDIR /home/vscode
 
 RUN export DEBIAN_FRONTEND=noninteractive && sudo apt-get update && \
       sudo apt-get -y install --no-install-recommends \
-        openssh-server python3-pip 
-RUN sudo /tmp/install.sh --group --retry 3 --retry-delay 5 --small --sudo r 
-RUN sudo /tmp/install.sh --group --retry 3 --retry-delay 5 --small --sudo openmpi 
-RUN /tmp/install.sh --group --retry 3 --retry-delay 5 --small rdep 
-RUN sudo /tmp/install.sh --group --retry 3 --retry-delay 5 --small --sudo cuda 12.0 
+        openssh-server python3-pip && sudo apt-get -y clean 
+RUN sudo /tmp/install.sh --group --retry 3 --retry-delay 5 --small --clean --sudo r 
+RUN sudo /tmp/install.sh --group --retry 3 --retry-delay 5 --small --clean --sudo openmpi 
+RUN /tmp/install.sh --group --retry 3 --retry-delay 5 --small --clean rdep 
+RUN sudo /tmp/install.sh --group --retry 3 --retry-delay 5 --small --clean --sudo cuda 12.0 
 ENV CUDA_PATH="/usr/local/cuda-12.0"
 ENV PATH="${CUDA_PATH}/bin:${PATH}"
 ENV LD_LIBRARY_PATH="${CUDA_PATH}/lib64:${LD_LIBRARY_PATH}" 
 RUN export DEBIAN_FRONTEND=noninteractive && sudo apt-get update && \
       sudo apt-get -y install --no-install-recommends \
-        libxml2 libxml2-dev libgl1-mesa-glx 
-RUN /tmp/install.sh --group --retry 3 --retry-delay 5 --small rinside reticulate --rpackage languageserver --rpackage png 
+        libxml2 libxml2-dev libgl1-mesa-glx && sudo apt-get -y clean 
+RUN /tmp/install.sh --group --retry 3 --retry-delay 5 --small --clean rinside reticulate --rpackage languageserver --rpackage png 
 RUN pip3 install vtk
 ENV RETICULATE_PYTHON="/usr/bin/python3" 

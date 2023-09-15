@@ -9,8 +9,8 @@ WORKDIR /home/vscode
 
 RUN export DEBIAN_FRONTEND=noninteractive && sudo apt-get update && \
       sudo apt-get -y install --no-install-recommends \
-        openssh-server python3-pip 
-RUN sudo /tmp/install.sh --group --retry 3 --retry-delay 5 --small --sudo r 
-RUN sudo /tmp/install.sh --group --retry 3 --retry-delay 5 --small --sudo openmpi 
-RUN /tmp/install.sh --group --retry 3 --retry-delay 5 --small rdep 
-RUN sudo /tmp/install.sh --group --retry 3 --retry-delay 5 --small --sudo hip 5.4.1 
+        openssh-server python3-pip && sudo apt-get -y clean 
+RUN sudo /tmp/install.sh --group --retry 3 --retry-delay 5 --small --clean --sudo r 
+RUN sudo /tmp/install.sh --group --retry 3 --retry-delay 5 --small --clean --sudo openmpi 
+RUN /tmp/install.sh --group --retry 3 --retry-delay 5 --small --clean rdep 
+RUN sudo /tmp/install.sh --group --retry 3 --retry-delay 5 --small --clean --sudo hip 5.4.1 
