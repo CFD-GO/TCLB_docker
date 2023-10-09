@@ -30,7 +30,7 @@ function rm_tmp {
   fi
   return 0;
 }
-  
+
 function pms_error {
 	if test -z "$PMS"
 	then
@@ -48,7 +48,7 @@ function try {
 	for RETRY in $(seq $TRYCOUNT)
 	do
 		FIRST=false; LAST=false; RTXT=""
-		test "$RETRY" == 1 && FIRST=true	
+		test "$RETRY" == 1 && FIRST=true
 		test "$RETRY" == "$TRYCOUNT" && LAST=true
 		$FIRST || RTXT=" (retry $RETRY/$TRYCOUNT)"
 		if $DRY
@@ -100,7 +100,7 @@ function install_rpackage_github {
 	name=$(echo $1 | sed "s/\//./g")
 	rm -f $name.tar.gz
 	try "Downloading $name" wget $WGETOPT https://github.com/$1/archive/master.tar.gz -O $name.tar.gz
-	try "Installing $name" R CMD INSTALL $name.tar.gz 
+	try "Installing $name" R CMD INSTALL $name.tar.gz
 }
 
 function install_rpackage {
@@ -202,7 +202,7 @@ esac
 for i in apt-get yum brew
 do
 	if test -f "$(command -v $i)"
-	then 
+	then
 		verb "Discovered Package Manager: $i"
 		PMS=$i
 		break
@@ -333,7 +333,7 @@ do
 		case "$1" in
 		*/*) GITHUB=true ;;
 		esac
-		
+
 		if $GITHUB
 		then
 			install_rpackage_github "$1"
@@ -380,7 +380,7 @@ do
 		CUDA=$1
 		shift
 		echo "#### Installing CUDA library ####"
-		
+
 		case "$PMS" in
 		apt-get)
 			OS=ubuntu1204
@@ -424,6 +424,7 @@ do
 			then
 				OS="$(lsb_release -sc)"
 			fi
+			echo "OS codename: $OS"
 			try "Download ROCM key" wget https://repo.radeon.com/rocm/rocm.gpg.key -O rocm.gpg.key
 			try "De-armoring the key" gpg --output rocm.gpg --dearmor rocm.gpg.key
 			try "Create keyrings dir" $SUDO mkdir --parents --mode=0755 /etc/apt/keyrings
@@ -440,9 +441,9 @@ do
 			update_apt
 			if $SMALL
 			then
-				try "Installing ROCm" $SUDO apt install rocm-hip-runtime-devel
+				install_apt "Installing ROCm" rocm-hip-runtime-dev
 			else
-				try "Installing ROCm" $SUDO apt install rocm-hip-sdk amdgpu-dkms
+				install_apt "Installing ROCm" rocm-hip-sdk amdgpu-dkms
 			fi
 			install_apt "Install missing package for HIP" libstdc++-12-dev
 			;;
@@ -506,7 +507,7 @@ do
 		case "$PMS" in
 		yum)
 			try "Installing python-devel from yum" $SUDO yum install -y python-devel
-			try "Installing numpy from yum" $SUDO yum install -y numpy 
+			try "Installing numpy from yum" $SUDO yum install -y numpy
 			try "Installing sympy from yum" $SUDO yum install -y sympy
 			;;
 		apt-get)
@@ -523,7 +524,7 @@ do
 	module)
 		case "$PMS" in
 		yum)
-			try "Installing dependencies: tcl" $SUDO yum -y install tcl 
+			try "Installing dependencies: tcl" $SUDO yum -y install tcl
 			try "Installing dependencies: tcl-devel" $SUDO yum -y install tcl-devel
 			;;
 		*)
@@ -536,7 +537,7 @@ do
 		try "make" make
 		try "make install" make install
 		try "Leaving module directory" cd ..
-		try "Remember to restart terminal" . ~/.bashrc	
+		try "Remember to restart terminal" . ~/.bashrc
 		;;
 	tapenade)
 		if echo "$2" | grep -Eq '^[0-9]*[.][0-9]*$'
@@ -563,7 +564,7 @@ do
 		;;
 	-*)
 		echo "Unknown option $1" ; usage ;;
-	*)		
+	*)
 		echo "Unknown installation '$1'"; usage ;;
 	esac
 	shift
