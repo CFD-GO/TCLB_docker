@@ -423,17 +423,26 @@ do
 			if test "$(lsb_release -si)" == "Ubuntu"
 			then
 				OS="$(lsb_release -sc)"
-			fi			
-			AMDGPU_DEB="$(printf amdgpu-install_%d.%d.%d%02d%02d-1_all.deb "$V1" "$V2" "$V1" "$V2" "$V3")"
-			AMDGPU_VER="$HIP"
+			fi
+			try "Download ROCM key" wget https://repo.radeon.com/rocm/rocm.gpg.key -O rocm.gpg.key
+			try "De-armoring the key" gpg --dearmor rocm.gpg.key --output rocm.gpg
+			try "Create keyrings dir" $SUDO mkdir --parents --mode=0755 /etc/apt/keyrings
+			try "Planting ROCM key" $SUDO mv rocm.gpg /etc/apt/keyrings/rocm.gpg
+			if ! $SMALL
+			then
+				echo "deb [arch=amd64 signed-by=/etc/apt/keyrings/rocm.gpg] https://repo.radeon.com/amdgpu/$HIP/ubuntu $OS main" >amdgpu.list
+				try "Planting the APT source" $SUDO mv amdgpu.list /etc/apt/sources.list.d/amdgpu.list
+			fi
+			echo "deb [arch=amd64 signed-by=/etc/apt/keyrings/rocm.gpg] https://repo.radeon.com/rocm/apt/$HIP $OS main" >rocm.list
+			try "Planting the APT source" $SUDO mv rocm.list /etc/apt/sources.list.d/rocm.list
+			echo -e 'Package: *\nPin: release o=repo.radeon.com\nPin-Priority: 600' >rocm-pin-600
+			try "Planting PIN" $SUDO mv rocm-pin-600 /etc/apt/preferences.d/rocm-pin-600
 			update_apt
-			try "Download AMDGPU install deb" wget https://repo.radeon.com/amdgpu-install/$AMDGPU_VER/ubuntu/$OS/$AMDGPU_DEB
-			install_apt "Installing deb" ./$AMDGPU_DEB
 			if $SMALL
 			then
-				try "Installing ROCm (amdgpu-install)" $SUDO amdgpu-install -y --usecase=rocm
+				try "Installing ROCm" $SUDO apt install rocm-hip-runtime-devel
 			else
-				try "Installing ROCm (amdgpu-install)" $SUDO amdgpu-install -y --usecase=rocm
+				try "Installing ROCm" $SUDO apt install rocm-hip-sdk amdgpu-dkms
 			fi
 			install_apt "Install missing package for HIP" libstdc++-12-dev
 			;;
