@@ -425,7 +425,7 @@ do
 				OS="$(lsb_release -sc)"
 			fi
 			try "Download ROCM key" wget https://repo.radeon.com/rocm/rocm.gpg.key -O rocm.gpg.key
-			try "De-armoring the key" gpg --dearmor rocm.gpg.key --output rocm.gpg
+			try "De-armoring the key" gpg --output rocm.gpg --dearmor rocm.gpg.key
 			try "Create keyrings dir" $SUDO mkdir --parents --mode=0755 /etc/apt/keyrings
 			try "Planting ROCM key" $SUDO mv rocm.gpg /etc/apt/keyrings/rocm.gpg
 			if ! $SMALL
